@@ -1,8 +1,12 @@
 package com.parkit.parkingsystem.integration.service;
 
-import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 
 public class DataBasePrepareService {
 
@@ -18,6 +22,8 @@ public class DataBasePrepareService {
 
             //clear ticket entries;
             connection.prepareStatement("truncate table ticket").execute();
+            
+            
 
         }catch(Exception e){
             e.printStackTrace();
@@ -25,6 +31,11 @@ public class DataBasePrepareService {
             dataBaseTestConfig.closeConnection(connection);
         }
     }
+    
+    
+    
+    
+    
 
 
 }

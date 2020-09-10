@@ -6,6 +6,7 @@ import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +33,10 @@ public class ParkingService {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
+                //Verify if this user has already come her to apply the reduction
+                if(rechercheAntecedent(vehicleRegNumber)==true) {
+                	System.out.println("Glad to see you again you benefit from a 5% reduction");
+                }
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
 
@@ -44,10 +49,14 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
-                ticketDAO.saveTicket(ticket);
+                boolean register = ticketDAO.saveTicket(ticket);
+                System.out.println(register);
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
+            }
+            else {
+            	System.out.println("Absence de parkingSpot");
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
@@ -64,7 +73,9 @@ public class ParkingService {
         ParkingSpot parkingSpot = null;
         try{
             ParkingType parkingType = getVehichleType();
+            System.out.println(parkingType);
             parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+            System.out.println(parkingNumber);
             if(parkingNumber > 0){
                 parkingSpot = new ParkingSpot(parkingNumber,parkingType, true);
             }else{
@@ -96,6 +107,18 @@ public class ParkingService {
             }
         }
     }
+    //Ajout d'une fonction recherche
+    public boolean rechercheAntecedent(String vehReg) {
+    	Ticket ancienTicket =ticketDAO.getTicket(vehReg);
+    	if(ancienTicket==null) {
+    		return false ;
+    	}
+    	else {
+    		return true;
+    	}
+		
+    }
+    
 
     public void processExitingVehicle() {
         try{
@@ -103,6 +126,7 @@ public class ParkingService {
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
             Date outTime = new Date();
             ticket.setOutTime(outTime);
+            
             fareCalculatorService.calculateFare(ticket);
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
