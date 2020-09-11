@@ -15,7 +15,6 @@ public class FareCalculatorService {
 		this.ticketDAO=ticketDAO;
 	}
 	public void calculateFare(Ticket ticket) {
-		System.out.println(ticketDAO.checkExistingVehiculPark(ticket.getVehicleRegNumber()));
 		double price=0;
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
@@ -74,7 +73,6 @@ public class FareCalculatorService {
 
 	public boolean fareFreeForLessHalfAnHour(Ticket ticket) {
 		double free = ticket.getOutTime().getTime() - ticket.getInTime().getTime();
-		System.out.println("Gratuit : " + free);
 		if (free <= (30*60*1000)) {
 			return true;
 		} else {

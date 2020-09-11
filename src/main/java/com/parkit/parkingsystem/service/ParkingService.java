@@ -49,14 +49,13 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
-                boolean register = ticketDAO.saveTicket(ticket);
-                System.out.println(register);
+                ticketDAO.saveTicket(ticket);
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
             }
             else {
-            	System.out.println("Absence de parkingSpot");
+            	System.out.println("No space for parking");
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
@@ -73,9 +72,7 @@ public class ParkingService {
         ParkingSpot parkingSpot = null;
         try{
             ParkingType parkingType = getVehichleType();
-            System.out.println(parkingType);
             parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
-            System.out.println(parkingNumber);
             if(parkingNumber > 0){
                 parkingSpot = new ParkingSpot(parkingNumber,parkingType, true);
             }else{

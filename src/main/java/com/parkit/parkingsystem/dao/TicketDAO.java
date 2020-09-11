@@ -87,6 +87,7 @@ public class TicketDAO {
              rs = ps.executeQuery();
             while(rs.next()) {
             	result =rs.getInt("COUNT");
+            	
             }
             
         }catch (Exception ex){
@@ -109,8 +110,9 @@ public class TicketDAO {
             ps.setDouble(1, ticket.getPrice());
             ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
             ps.setInt(3,ticket.getId());
-            res = ps.execute();
+            ps.execute();
             dataBaseConfig.closePreparedStatement(ps);
+            res=true;
             return res;
         }catch (Exception ex){
             logger.error("Error saving ticket info",ex);
